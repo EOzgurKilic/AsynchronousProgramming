@@ -87,10 +87,6 @@ class Program
          * Unstarted          | The thread has been created but Start() has not been called yet.
          * Stopped            | The thread has finished execution.
          * WaitSleepJoin      | The thread is waiting, sleeping, or blocked in Join().
-         *
-         * Avoid legacy suspend/abort APIs in new code: use CancellationToken and
-         * cooperative cancellation instead. `ThreadState` is mainly useful for
-         * diagnostics; do not use it for synchronization decisions.
          */
         
         /*Thread thread = new(() =>
@@ -227,72 +223,6 @@ class Program
         //----------------------------------------------------------------------------------
         //Thread Synchronization & Blocking Synchronization
 
-            #region Your spinning practice (kept as a comment)
-            /*
-            // utilized approach to keep multithreads in sync that make operations on the same source (variables, etc.) while running at the same time
-            bool thread1Access = true;
-            bool thread2Access = false;
-            bool ending = false;
-            int num1 = 0;
-            Thread thread1 = new(() =>
-            {
-                int count = 0;
-                while (count++ < 30)
-                {
-                    Thread.Sleep(1000);
-                    if (thread1Access)
-                    {
-                        if (num1 < 10)
-                        {
-                            System.Console.WriteLine(num1++);
-                        }
-                        else
-                        {
-                            thread1Access = false;
-                            thread2Access = true;
-                        }
-                    }
-                }
-                ending = true;
-            });
-            Thread thread2 = new(() =>
-            {
-                while (true)
-                {
-                    if (thread2Access)
-                    {
-                        num1 /= 10;
-                        thread2Access = false;
-                        thread1Access = true;
-                    }
-                    if (ending) break;
-                }
-            });
-            thread1.Start();
-            thread2.Start();
-            */
-            #endregion
-            #region Minimal spinning advanced practice
-            // Spinning fits a very short wait: the consumer waits for the producer's result.
-            /*int result = 0;
-            bool resultIsReady = false;
-
-            Thread producer = new(() =>
-            {
-                result = 42;
-                Volatile.Write(ref resultIsReady, true);
-            });
-
-            producer.Start();
-            SpinWait.SpinUntil(() => Volatile.Read(ref resultIsReady));
-
-            Console.WriteLine($"Result: {result}");
-            producer.Join();*/
-            #endregion
-
-
-
-
             #region Monitor.Enter, Monitor.TryEnter and Monitor.Exit Methods for Locking and LockTaken to ensure the Locking action
             //They basically represent the functional method version of the locking mechanism.
             //Enter locks and exit unlocks the specified object
@@ -366,11 +296,11 @@ class Program
 
             //Monitor.TryEnter
             //We get a bool if the action is taken or not.
-            Lock lockObj = new();
+            /*Lock lockObj = new();
             Thread thread1 = new(() =>
             {
                 
-                var result = Monitor.TryEnter(lockObj, 0);
+                var result = Monitor.TryEnter(lockObj, 1000);
                 if (result)
                 {
                     try
@@ -384,7 +314,299 @@ class Program
                     }
                 }
             });
-            thread1.Start();
+            thread1.Start();*/
             #endregion
+
+
+#region Semaphore & SemaphoreSlim
+    // A Semaphore limits concurrent access for threads to a shared resource in the Thread Synchronisation.
+
+    /*
+|----------------------------------------------------------------------------------
+| Semaphore                          | SemaphoreSlim
+|----------------------------------------------------------------------------------
+| Older, OS-backed synchronization   | Newer and lightweight, non operating-system 
+| primitive.                         | resource synchronization primitive.
+|----------------------------------------------------------------------------------
+| Can be named and used for          | Works only within the current process;
+| synchronization across processes.  | it cannot be named.
+|----------------------------------------------------------------------------------
+| Supports synchronous waiting only  | Supports both synchronous Wait() and
+| (for example, WaitOne()).          | asynchronous WaitAsync().
+|----------------------------------------------------------------------------------
+| Use it when cross-process          | Usually preferred in modern .NET apps,
+| synchronization is required.       | especially when using async/await.
+|----------------------------------------------------------------------------------
+*/
+
+//Semaphore
+/* using Semaphore sem = new(1, 4); //First argument is initial count and the second one is max count. Initial count indicates the number of the thread access at the same time and this can be increased up to the max count.
+//Utilizing from the using keyword in the declarations automatically calls the Dispose() method once the instances of the classes implementing IDisposable are done being used.
+Thread thread1 = new(() =>
+{
+    sem.WaitOne(); //Requests access
+    for (int i = 1; i < 10; i++){
+        System.Console.WriteLine($"Thread 1 {i}");
+        Thread.Sleep(200);
+    }
+    sem.Release(); //Releases the permission slot
+});
+Thread thread2 = new(() =>
+{
+    sem.WaitOne(); 
+    for (int i = 11; i < 20; i++){
+        System.Console.WriteLine($"Thread 2 {i}");
+        Thread.Sleep(200);
+    }
+    sem.Release();
+});
+
+thread1.Start();
+thread2.Start();
+
+System.Console.WriteLine();
+System.Console.WriteLine();
+System.Console.WriteLine();
+Thread.Sleep(4000);
+
+sem.Release(1); //Release is also used to increase the permission slots (if used out of no where). You can give how many more slots you want it to have as an argument)
+
+Thread thread3 = new(() =>
+{
+    sem.WaitOne(); 
+    for (int i = 21; i < 30; i++){
+        System.Console.WriteLine($"Thread 3 {i}");
+        Thread.Sleep(200);
+    }
+    sem.Release();
+});
+Thread thread4 = new(() =>
+{
+    sem.WaitOne(); 
+    for (int i = 31; i < 40; i++){
+        System.Console.WriteLine($"Thread 4 {i}");
+        Thread.Sleep(200);
+    }
+    sem.Release();
+});
+Thread thread5 = new(() =>
+{
+    sem.WaitOne(); 
+    for (int i = 41; i < 50; i++){
+        System.Console.WriteLine($"Thread 5 {i}");
+        Thread.Sleep(200);
+    }
+    sem.Release();
+});
+Thread thread6 = new(() =>
+{
+    sem.WaitOne(); 
+    for (int i = 51; i < 60; i++){
+        System.Console.WriteLine($"Thread 6 {i}");
+        Thread.Sleep(200);
+    }
+    sem.Release();
+});
+
+Thread thread7 = new(() =>
+{
+    sem.WaitOne(); 
+    for (int i = 61; i < 70; i++){
+        System.Console.WriteLine($"Thread 7 {i}");
+        Thread.Sleep(200);
+    }
+    sem.Release();
+});
+Thread thread8 = new(() =>
+{
+    sem.WaitOne(); 
+    for (int i = 71; i < 80; i++){
+        System.Console.WriteLine($"Thread 8 {i}");
+        Thread.Sleep(200);
+    }
+    sem.Release();
+});
+
+thread3.Start();
+thread4.Start();
+thread5.Start();
+thread6.Start();
+thread7.Start();
+thread8.Start();*/
+
+
+//SemaphoreSlim
+
+//For sync operations, its pretty much the same but we use Wait() rather than WaitOne() method for the SemaphoreSlim concept.
+/*SemaphoreSlim sem = new(1, 4); 
+
+Thread thread1 = new(() =>
+{
+    sem.Wait(); //Requests access
+    for (int i = 1; i < 10; i++){
+        System.Console.WriteLine($"Thread 1 {i}");
+        Thread.Sleep(200);
+    }
+    sem.Release();
+});
+Thread thread2 = new(() =>
+{
+    sem.Wait(); 
+    for (int i = 11; i < 20; i++){
+        System.Console.WriteLine($"Thread 2 {i}");
+        Thread.Sleep(200);
+    }
+    sem.Release();
+});
+
+thread1.Start();
+thread2.Start();
+
+System.Console.WriteLine();
+System.Console.WriteLine();
+System.Console.WriteLine();
+Thread.Sleep(4000);
+
+sem.Release(1); 
+
+Thread thread3 = new(() =>
+{
+    sem.Wait(); 
+    for (int i = 21; i < 30; i++){
+        System.Console.WriteLine($"Thread 3 {i}");
+        Thread.Sleep(200);
+    }
+    sem.Release();
+});
+Thread thread4 = new(() =>
+{
+    sem.Wait(); 
+    for (int i = 31; i < 40; i++){
+        System.Console.WriteLine($"Thread 4 {i}");
+        Thread.Sleep(200);
+    }
+    sem.Release();
+});
+Thread thread5 = new(() =>
+{
+    sem.Wait(); 
+    for (int i = 41; i < 50; i++){
+        System.Console.WriteLine($"Thread 5 {i}");
+        Thread.Sleep(200);
+    }
+    sem.Release();
+});
+Thread thread6 = new(() =>
+{
+    sem.Wait(); 
+    for (int i = 51; i < 60; i++){
+        System.Console.WriteLine($"Thread 6 {i}");
+        Thread.Sleep(200);
+    }
+    sem.Release();
+});
+
+Thread thread7 = new(() =>
+{
+    sem.Wait(); 
+    for (int i = 61; i < 70; i++){
+        System.Console.WriteLine($"Thread 7 {i}");
+        Thread.Sleep(200);
+    }
+    sem.Release();
+});
+Thread thread8 = new(() =>
+{
+    sem.Wait(); 
+    for (int i = 71; i < 80; i++){
+        System.Console.WriteLine($"Thread 8 {i}");
+        Thread.Sleep(200);
+    }
+    sem.Release();
+});
+
+thread3.Start();
+thread4.Start();
+thread5.Start();
+thread6.Start();
+thread7.Start();
+thread8.Start();*/
+
+//!!!!!!!!!NOTICE!!!!!!!!!
+//Async SemaphoreSlim Practice will be covered after the Asynchronisation Programming Tutorial
+#endregion
+
+
+
+
+
+
+
+
+            //Spinning's Significance is low (P3-4)
+            #region Your spinning practice (kept as a comment)
+            /*
+            // utilized approach to keep multithreads in sync that make operations on the same source (variables, etc.) while running at the same time
+            bool thread1Access = true;
+            bool thread2Access = false;
+            bool ending = false;
+            int num1 = 0;
+            Thread thread1 = new(() =>
+            {
+                int count = 0;
+                while (count++ < 30)
+                {
+                    Thread.Sleep(1000);
+                    if (thread1Access)
+                    {
+                        if (num1 < 10)
+                        {
+                            System.Console.WriteLine(num1++);
+                        }
+                        else
+                        {
+                            thread1Access = false;
+                            thread2Access = true;
+                        }
+                    }
+                }
+                ending = true;
+            });
+            Thread thread2 = new(() =>
+            {
+                while (true)
+                {
+                    if (thread2Access)
+                    {
+                        num1 /= 10;
+                        thread2Access = false;
+                        thread1Access = true;
+                    }
+                    if (ending) break;
+                }
+            });
+            thread1.Start();
+            thread2.Start();
+            */
+            #endregion
+            #region Minimal spinning advanced practice
+            // Spinning fits a very short wait: the consumer waits for the producer's result.
+            /*int result = 0;
+            bool resultIsReady = false;
+
+            Thread producer = new(() =>
+            {
+                result = 42;
+                Volatile.Write(ref resultIsReady, true);
+            });
+
+            producer.Start();
+            SpinWait.SpinUntil(() => Volatile.Read(ref resultIsReady));
+
+            Console.WriteLine($"Result: {result}");
+            producer.Join();*/
+            #endregion
+
+
     }
 }
