@@ -660,6 +660,74 @@ thread8.Start();*/
             
             #endregion
 
+            
+            #region Interlocked Class
+            //Considered in Non-Blocking Synchronisation. 
+            //Used at performing operations on variables used in multiple threads in a safe, and synchronous way.
+            
+            //Might feel like volatile keyword usage but this class is safer as it provides operations at an atomic level (remember why the transaction from SQL was called "Atomic" to be able to remember what atomic means).
+            //It first blocks access coming from any other point, performs the operation, and then releases the field.
+            //On the other hand, volatile keyword only makes sure that the marked field's data is always pulled from RAM anywhere in the code as the previously loaded value might be pulled from a data register instead of observing another thread's update. 
+            
+            //!!!!! YOU SHOULD PREFER THIS CLASS OVER VOLATILE KEYWORD IF YOU ARE PARTICULARLY WORKING ON PRIMITIVE VALUES !!!!!!!
+            
+            //Interlocked.Increment(ref field);
+            //Interlocked.Decrement(ref field);
+            //Interlocked.Add(ref field, whatsGonnaBeAdded);
+            //Interlocked.Exchange(ref field, whatFieldsGonnaBe); This changes the given field's value
+            //Interlocked.CompareExchange(ref field, whatFieldsGonnaBe, ifEqualToThis); This changes the given field's value if it is equal to the third argument
+
+            /* int no = 0;
+            Thread thread1 = new(() =>
+            {
+                while (true)
+                {
+                    Interlocked.Increment(ref no);
+                }
+            });
+            Thread thread2 = new(() => { 
+                while (true)
+                {
+                    Console.WriteLine(no);
+                } 
+            });
+            Thread thread3 = new(() =>
+            {
+                while (true)
+                {
+                    Interlocked.Decrement(ref no);
+                }
+            });
+            thread1.Start();
+            thread2.Start();
+            thread3.Start();*/
+            #endregion
+
+            #region MemoryBarrier
+            //When this method is called, all the thingies modified, used, manipulated above it get processed and updated if they were touched in another thread.
+            /*int i = 0;
+            Thread writeThread = new(() =>
+            {
+                while (true)
+                {
+                    i++;
+                    Thread.MemoryBarrier(); //saved the i's updated val and updated it if it was modified sw else in the code.
+                }
+            });
+            
+            Thread readThread = new(() =>
+            {
+                while (true)
+                {
+                    Thread.MemoryBarrier();//saved nothing as there is nothing to be saved above here and updated all the properties, fields, variables, etc. saved in sw else before
+                    Console.WriteLine(i);
+                }
+            });
+            writeThread.Start();
+            readThread.Start();*/
+            #endregion
+            
+            
 
             #region Signalling - ManualResetEvent, AutoResetEvent, CountdownEvent
             /*ManualResetEvent: is a tool that makes multiple threads wait for an even to happen to go on,
