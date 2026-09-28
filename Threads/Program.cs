@@ -1,8 +1,10 @@
-﻿using System.Threading;
+﻿using System.Linq.Expressions;
+using System.Threading;
 namespace Threads;
 
 class Program
 {
+    volatile static int vl; 
     static void Main(string[] args)
     {
         //Threads
@@ -537,12 +539,6 @@ thread8.Start();*/
 #endregion
 
 
-
-
-
-
-
-
             //Spinning's Significance is low (P3-4)
             #region Your spinning practice (kept as a comment)
             /*
@@ -608,5 +604,60 @@ thread8.Start();*/
             #endregion
 
 
+            #region Non-Blocking Synchronisation
+            // Volatile:
+            /* 
+            A volatile variable provides cross-thread visibility and memory-ordering guarantees
+            without blocking or providing mutual exclusion. Without volatile, the compiler/CPU
+            may optimize accesses so a thread keeps using a previously loaded value (e.g. in a
+            data register) instead of observing another thread's update. This can be faster, but the
+            other thread is not guaranteed to ever see the update. Volatile prevents this kind
+            of optimization for the variable, ensuring that subsequent reads observe the required
+            cross-thread changes. It may have some overhead compared to a normal variable, but
+            unlike lock, it does not make threads wait for each other.
+            
+            Key distinction:
+            Normal → potentially faster, but no cross-thread visibility guarantee.
+            Volatile → reliable visibility, non-blocking, no mutual exclusion.
+            */
+
+            //!!!!USEFUL WHEN ...!!!!
+            //... one thread updates a variable and multiple threads read it.
+
+
+            //Remember that this scenerio is not easy to observe manually but it occurs
+            //volatile int i = 0; !!!Footnote: volitale fields can be only declared within classes & structs & etc. but not in method bodies. Check this classes body above to see the declaration of the int i.
+            /*vl = 0;
+            Thread th1 = new(() =>
+            {
+                while (true)
+                    vl++;
+                
+            });
+            Thread th2 = new(() =>
+            {
+                while(true){
+                    System.Console.WriteLine(vl);
+                    Thread.Sleep(1);
+                }
+            });
+            Thread th3 = new(() =>
+            {
+                while (true)
+                    vl--;
+                
+            });
+            th1.IsBackground = true;
+            th2.IsBackground = true;
+            th3.IsBackground = true;
+
+            th1.Start();
+            th2.Start();
+            th3.Start();
+            Thread.Sleep(300);*/
+            
+            
+            
+            #endregion
     }
 }
