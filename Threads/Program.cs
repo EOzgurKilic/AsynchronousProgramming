@@ -659,5 +659,15 @@ thread8.Start();*/
             
             
             #endregion
+
+
+            #region Signalling - ManualResetEvent, AutoResetEvent, CountdownEvent
+            /*ManualResetEvent: is a tool that makes multiple threads wait for an even to happen to go on,
+            can be manually reset.*/
+
+            //AutoResetEvent: is a tool that makes a single thread wait for an even to happen to go on.
+
+            //CountdownEvent: used to wait for a certain number of threads to be done with a specific process.
+            #endregion
     }
 }
