@@ -737,5 +737,33 @@ thread8.Start();*/
 
             //CountdownEvent: used to wait for a certain number of threads to be done with a specific process.
             #endregion
+    
+    
+    //-----------------------------------------------------------------------------------------
+        //Thread Pool
+        //is a tool designed to manage, sustain multiple threads under a roof and make existing threads useable again.
+        //Primary purpose of its usage is utilizing from the CPU resources more efficiently and hamper unnecessary thread creation.
+        //Its threads are background threads, meaning they will be shut down once Main reaches the end.
+
+        ThreadPool.QueueUserWorkItem(WorkerMethod, "Task 1"); //After giving the delegate as the first argument, you give the remaining arguments here in the way they correspond to the relevant delegate's arguments.
+        ThreadPool.QueueUserWorkItem(WorkerMethod, "Task 2");
+        ThreadPool.QueueUserWorkItem(WorkerMethod, "Task 3");
+        ThreadPool.QueueUserWorkItem(WorkerMethod, "Task 4");
+        ThreadPool.QueueUserWorkItem(WorkerMethod, "Task 5");
+        ThreadPool.QueueUserWorkItem(WorkerMethod, "Task 6");
+        ThreadPool.QueueUserWorkItem(WorkerMethod, "Task 7");
+        ThreadPool.QueueUserWorkItem(WorkerMethod, "Task 8");
+        ThreadPool.QueueUserWorkItem(WorkerMethod, "Task 9");
+
+        Console.Read();
+
+        void WorkerMethod(object state)
+        {
+            string name = (string)state;
+            System.Console.WriteLine($"{name} has been initialized!");
+            Thread.Sleep(new Random().Next(1000, 5000));
+            System.Console.WriteLine($"{name} done!");
+        }
+
     }
 }
