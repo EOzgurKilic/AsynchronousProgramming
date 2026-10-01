@@ -745,6 +745,11 @@ thread8.Start();*/
         //Primary purpose of its usage is utilizing from the CPU resources more efficiently and hamper unnecessary thread creation.
         //Its threads are background threads, meaning they will be shut down once Main reaches the end.
 
+        ThreadPool.SetMaxThreads(4, 1); //the max no of threads. The second argument sets the maximum number of threads used to process asynchronous I/O completions.
+        ThreadPool.SetMinThreads(4, 1); //Minimum the pool works toward as requests arrive. The second argument sets the min number of threads used to process asynchronous I/O completions.
+        // In most applications, there is no need to change the ThreadPool limits.
+        // The default values are usually sufficient.
+
         ThreadPool.QueueUserWorkItem(WorkerMethod, "Task 1"); //After giving the delegate as the first argument, you give the remaining arguments here in the way they correspond to the relevant delegate's arguments.
         ThreadPool.QueueUserWorkItem(WorkerMethod, "Task 2");
         ThreadPool.QueueUserWorkItem(WorkerMethod, "Task 3");
@@ -765,5 +770,7 @@ thread8.Start();*/
             System.Console.WriteLine($"{name} done!");
         }
 
+        //Wait Handles
+        //It involves signalling mechanism and the ninth tutorial vid about this mechanism is unavailable on youtube for some reason. Therefore I will be skipping it temporarily, already informed teacher Gençay about this. You are at 30:00 in the 10th video. Come back here once the ninth vid is uploaded and u finish it.
     }
 }
