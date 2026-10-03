@@ -736,6 +736,108 @@ thread8.Start();*/
             //AutoResetEvent: is a tool that makes a single thread wait for an even to happen to go on.
 
             //CountdownEvent: used to wait for a certain number of threads to be done with a specific process.
+            
+            
+            //AutoResetEvent
+            /*AutoResetEvent autoR = new AutoResetEvent(false); //we set it to false so that we can send the signal by setting it to true at any point in the code
+            Thread td1 = new Thread(() =>
+            {
+                Console.WriteLine("Thread 1 operation is done!");
+                autoR.Set(); //This Set method turns the false bool value into true and gives the signal.
+            });
+            Thread td2 = new Thread(() =>
+            {
+                autoR.WaitOne(); //although this line exists in both the second and the third thread, the first one to execute this line will get the permission
+                //and the other one will not be executed as AutoResetEvent tool permits a single thread, wherever the WaitOne() is called first to go on. 
+                //But if we want the other thread to execute its body, we can add the Set method call at the ends of both td2 and td3.
+                //This way, the first one to execute WaitOne() call will allow the other one to execute the same method by executing Set() method at the end of their body.
+                Console.WriteLine("Thread 2 operation is permitted to start!");
+                autoR.Set(); //After the usage of the first Set method call, a reset action should be done normally but as u can understand from the name of this event, it does that automatically.
+            });
+            Thread td3 = new Thread(() =>
+            {
+                autoR.WaitOne();
+                Console.WriteLine("Thread 3 operation is permitted to start!");
+                autoR.Set(); //Will allow td2 to execute WaitOne() if it executes WaitOne() call first.
+            });
+            td1.Start();
+            td2.Start();
+            td3.Start();*/
+            
+            
+            //ManuelResentEventSlim
+            //This class's Set method will let all the waiting Wait() lines to proceed with the code explicitly instead of  letting one do it.
+            //If we want this permission to stop at this point after releasing it with a Set() call, we will be utilizing from the Reset() call to still keep those who hasn't got the signal yet after the Set() call waiting. Keep in mind that some can get the signal first and proceed, and the remaining might be late for that, ending up exposed to the Reset() call and waiting for the next Set() call to proceed.
+            /*ManualResetEventSlim mre = new ManualResetEventSlim(false);
+            Thread td1 = new Thread(() =>
+            {
+                Console.WriteLine("Thread 1 operation is done!");
+                mre.Set(); 
+            });
+            Thread td2 = new Thread(() =>
+            {
+                mre.Wait();
+                Console.WriteLine("Thread 2 operation is permitted to start!");
+            });
+            Thread td3 = new Thread(() =>
+            {
+                mre.Wait();
+                Console.WriteLine("Thread 3 operation is permitted to start!");
+            });
+            td1.Start();
+            td2.Start();
+            td3.Start();*/
+            
+            
+            //EventWaitHandle
+            //This class will behave the same way either ManuelReset on AutoReset based on the second argument we will give to its constructor.
+            EventWaitHandle eventR = new EventWaitHandle(false, EventResetMode.ManualReset);
+            //EventWaitHandle eventR = new EventWaitHandle(false, EventResetMode.AutoReset);
+            /*Thread td1 = new Thread(() =>
+            {
+                Console.WriteLine("Thread 1 operation is done!");
+                eventR.Set(); 
+            });
+            Thread td2 = new Thread(() =>
+            {
+                eventR.WaitOne(); 
+                Console.WriteLine("Thread 2 operation is permitted to start!");
+            });
+            Thread td3 = new Thread(() =>
+            {
+                eventR.WaitOne();
+                Console.WriteLine("Thread 3 operation is permitted to start!");
+            });
+            td1.Start();
+            td2.Start();
+            td3.Start();*/
+            
+            
+            //CountdownEvent
+            //CountdownEvent will make a thread wait until a specified number of signals are given.
+            /*CountdownEvent countdown = new CountdownEvent(3);//means 3 signals must be called for the thread where the wait method is called to proceed.
+            Thread td1 = new Thread(() =>
+            {
+                Console.WriteLine("Thread 1 operation is done!");
+                countdown.Signal();
+            });
+            Thread td2 = new Thread(() =>
+            {
+                Console.WriteLine("Thread 2 operation is permitted to start!");
+                countdown.Signal();
+            });
+            Thread td3 = new Thread(() =>
+            {
+                Console.WriteLine("Thread 3 operation is permitted to start!");
+                Thread.Sleep(4000);
+                countdown.Signal();
+            });
+            td1.Start();
+            td2.Start();
+            td3.Start();
+            Console.WriteLine("Main thread is expecting the signals");
+            countdown.Wait();
+            Console.WriteLine("All the signals are triggered!");*/
             #endregion
     
     
