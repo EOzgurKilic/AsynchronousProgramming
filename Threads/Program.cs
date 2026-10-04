@@ -765,8 +765,8 @@ thread8.Start();*/
             td3.Start();*/
             
             
-            //ManuelResentEventSlim
-            //This class's Set method will let all the waiting Wait() lines to proceed with the code explicitly instead of  letting one do it.
+            //ManuelResetEventSlim
+            //This class's Set method will let all the waiting Wait() lines to proceed with the code explicitly instead of letting one do it.
             //If we want this permission to stop at this point after releasing it with a Set() call, we will be utilizing from the Reset() call to still keep those who hasn't got the signal yet after the Set() call waiting. Keep in mind that some can get the signal first and proceed, and the remaining might be late for that, ending up exposed to the Reset() call and waiting for the next Set() call to proceed.
             /*ManualResetEventSlim mre = new ManualResetEventSlim(false);
             Thread td1 = new Thread(() =>
@@ -842,12 +842,12 @@ thread8.Start();*/
     
     
     //-----------------------------------------------------------------------------------------
-        //Thread Pool
+        #region Thread Pool
         //is a tool designed to manage, sustain multiple threads under a roof and make existing threads useable again.
         //Primary purpose of its usage is utilizing from the CPU resources more efficiently and hamper unnecessary thread creation.
         //Its threads are background threads, meaning they will be shut down once Main reaches the end.
 
-        ThreadPool.SetMaxThreads(4, 1); //the max no of threads. The second argument sets the maximum number of threads used to process asynchronous I/O completions.
+        /*ThreadPool.SetMaxThreads(4, 1); //the max no of threads. The second argument sets the maximum number of threads used to process asynchronous I/O completions.
         ThreadPool.SetMinThreads(4, 1); //Minimum the pool works toward as requests arrive. The second argument sets the min number of threads used to process asynchronous I/O completions.
         // In most applications, there is no need to change the ThreadPool limits.
         // The default values are usually sufficient.
@@ -870,9 +870,51 @@ thread8.Start();*/
             System.Console.WriteLine($"{name} has been initialized!");
             Thread.Sleep(new Random().Next(1000, 5000));
             System.Console.WriteLine($"{name} done!");
-        }
+        }*/
 
-        //Wait Handles
-        //It involves signalling mechanism and the ninth tutorial vid about this mechanism is unavailable on youtube for some reason. Therefore I will be skipping it temporarily, already informed teacher Gençay about this. You are at 30:00 in the 10th video. Come back here once the ninth vid is uploaded and u finish it.
+        //Wait Handles - RegisteredWaitHandle
+        //Is used for signalling in Thread pools.
+        AutoResetEvent autoResetEvent = new AutoResetEvent(false);
+        //or
+        ManualResetEvent manualResetEvent = new ManualResetEvent(false);
+        //We will give one of these events to the RegisterWaitForSingleObject method as an argument.
+        RegisteredWaitHandle handle1 = ThreadPool.RegisterWaitForSingleObject(manualResetEvent, WorkerMethod, "Task on", -1, true); // We only reference what this ThreadPool method returns to release the system resources (arguments we give) later on with the Unregister method that we can access over the RegisteredWaitHandle instance.
+        RegisteredWaitHandle handle2 = ThreadPool.RegisterWaitForSingleObject(autoResetEvent, WorkerMethod, "Task on", 5000, true); //This one is with timeout. You will see that the WorketMethod will be executed still although the set method is never called after 5 seconds.
+        //The parameter before the last one gets a specific time in miliseconds and initializes the WorkerMethod execution after that time passes even though the handle wasn't triggered. You can give -1 not to activate it.
+
+        Thread.Sleep(7000);
+        manualResetEvent.Set();
+        Console.Read();
+        handle1.Unregister(manualResetEvent);
+        handle2.Unregister(autoResetEvent);
+        void WorkerMethod(object state, bool timedOut)//We give our worker method as the second argument to the pool waithandle but the delegate parameter has a bool parameter in addition to the state so we followed the pattern here.
+        {
+            string name = (string)state;
+            System.Console.WriteLine($"{name} has been initialized!");
+            Thread.Sleep(new Random().Next(1000, 5000));
+            System.Console.WriteLine($"{name} done!");
+        }
+        
+        
+        //WaitHandle Class Methods - WaitAny, WaitAll, and SignalAndWait Methods
+        
+        //WaitAll
+        //If we want a thread to wait until a set of ResetEvents to be released, then we can utilize from this static method.
+        
+        AutoResetEvent autoResetEvent1 = new AutoResetEvent(false);
+        AutoResetEvent autoResetEvent2 = new AutoResetEvent(false);
+        ManualResetEvent manualResetEvent1 = new ManualResetEvent(false);
+        ManualResetEvent manualResetEvent2 = new ManualResetEvent(false);
+
+        WaitHandle.WaitAll(new WaitHandle[]
+        {
+            //And we put here the Events we want to wait for them getting released.
+            autoResetEvent1,
+            autoResetEvent2,
+            manualResetEvent1,
+            manualResetEvent
+        });
+
+        #endregion
     }
 }
