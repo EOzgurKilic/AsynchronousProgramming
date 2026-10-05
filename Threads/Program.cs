@@ -874,7 +874,7 @@ thread8.Start();*/
 
         //Wait Handles - RegisteredWaitHandle
         //Is used for signalling in Thread pools.
-        AutoResetEvent autoResetEvent = new AutoResetEvent(false);
+        /*AutoResetEvent autoResetEvent = new AutoResetEvent(false);
         //or
         ManualResetEvent manualResetEvent = new ManualResetEvent(false);
         //We will give one of these events to the RegisterWaitForSingleObject method as an argument.
@@ -893,7 +893,7 @@ thread8.Start();*/
             System.Console.WriteLine($"{name} has been initialized!");
             Thread.Sleep(new Random().Next(1000, 5000));
             System.Console.WriteLine($"{name} done!");
-        }
+        }*/
         
         
         //WaitHandle Class Methods - WaitAny, WaitAll, and SignalAndWait Methods
@@ -901,7 +901,7 @@ thread8.Start();*/
         //WaitAll
         //If we want a thread to wait until a set of ResetEvents to be released, then we can utilize from this static method.
         
-        AutoResetEvent autoResetEvent1 = new AutoResetEvent(false);
+        /*AutoResetEvent autoResetEvent1 = new AutoResetEvent(false);
         AutoResetEvent autoResetEvent2 = new AutoResetEvent(false);
         ManualResetEvent manualResetEvent1 = new ManualResetEvent(false);
         ManualResetEvent manualResetEvent2 = new ManualResetEvent(false);
@@ -913,8 +913,54 @@ thread8.Start();*/
             autoResetEvent2,
             manualResetEvent1,
             manualResetEvent
-        });
+        });*/
 
+        
+        //WaitAny Method
+        //This method will wait until one of the Reset events we give to it is completed.
+        /*AutoResetEvent autoResetEvent1 = new AutoResetEvent(false);
+        AutoResetEvent autoResetEvent2 = new AutoResetEvent(false);
+        ManualResetEvent manualResetEvent1 = new ManualResetEvent(false);
+        ManualResetEvent manualResetEvent2 = new ManualResetEvent(false);
+
+        WaitHandle.WaitAny(new WaitHandle[]
+        {
+            //And we put here the Events we want to wait for one of them to get released.
+            autoResetEvent1,
+            autoResetEvent2,
+            manualResetEvent1,
+            manualResetEvent
+        });*/
+
+
+        //SignalAndWait
+        //We will give this method a pair of Reset Events and it will keep the thread on hold 'til both are released.
+        /*AutoResetEvent autoResetEvent1 = new AutoResetEvent(false);
+        ManualResetEvent manualResetEvent2 = new ManualResetEvent(false);
+
+        WaitHandle.SignalAndWait(
+            //And we put here the event pair we want to wait for both to get released.
+            autoResetEvent1,
+            manualResetEvent2);*/
+
+
+
+        #endregion
+
+
+        #region Multi-threaded Timer
+
+        //A timer runs a callback repeatedly at a chosen interval.
+        //They are working with ThreadPools so its optimized in this aspect.
+        //The timers run callbacks on ThreadPool threads:
+        /*Timer tmr = new (state => {System.Console.WriteLine("Tik, Tak!");}, "state", 2000, 1000); //Executed by a BG thread!!!
+        Thread.Sleep(5000);
+        //A timers period could be change later with the Change() method;
+        tmr.Change(0, 100);
+        Timer tmr2 = new (state => {System.Console.WriteLine("Gonna be executed for once!");}, "state", 1000, Timeout.Infinite);
+        //If we want our timer to be triggered once, we give Timeout.Infinite as the last period argument.
+
+        Console.Read();*/
         #endregion
     }
 }
