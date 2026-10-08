@@ -124,7 +124,7 @@ class Program
         
         #region Locking
 
-        /*int i = 0;
+        int i = 0;
         Lock locker = new();
         Thread thread1 = new(() =>
         {
@@ -140,16 +140,17 @@ class Program
         {
             lock (locker)
             {
-                while (i < 100)
+                while (i < 20)
                 {
-                    Console.WriteLine(i++);
+                    Console.WriteLine(i++ + " -2");
                 }
 
                 Console.WriteLine("ig it waits, behaving in sync");
             }
         });
         thread1.Start();
-        thread2.Start();*/
+        thread2.Start();
+        
         #endregion
         
         
@@ -302,7 +303,7 @@ class Program
             Thread thread1 = new(() =>
             {
                 
-                var result = Monitor.TryEnter(lockObj, 1000);
+                var result = Monitor.TryEnter(lockObj, 1000);//waits for the specified period of time and returns false if it can't by then.
                 if (result)
                 {
                     try
