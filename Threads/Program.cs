@@ -622,7 +622,7 @@ thread8.Start();*/
             Volatile → reliable visibility, non-blocking, no mutual exclusion.
             */
 
-            //!!!!USEFUL WHEN ...!!!!
+            //!!!!USEFUL WHEN...!!!!
             //... one thread updates a variable and multiple threads read it.
 
 
