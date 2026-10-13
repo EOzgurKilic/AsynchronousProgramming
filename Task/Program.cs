@@ -24,14 +24,14 @@
             //There are 3 ways to declare a task in C#:
 
             //1. Using Task constructor - To manually create a task and start it (with Start()) later.
-            Task task1 = new Task(() => { Console.WriteLine("Task 1 is running."); Thread.Sleep(5000);}); //Constructor takes an Action or Func delegate as a parameter to define the task's work. Reminder: Action delegate represents void methods.
+            //Task task1 = new Task(() => { Console.WriteLine("Task 1 is running."); Thread.Sleep(5000);}); //Constructor takes an Action or Func delegate as a parameter to define the task's work. Reminder: Action delegate represents void methods.
             //task1.Start(); //To start the task execution.
 
             //2. Using Task.Run() method - The simplest and most common way to create and start a task in one step. It returns a Task object.
-            Task task2 = Task.Run(() => { Console.WriteLine("Task 2 is running."); Thread.Sleep(5000);});
+            //Task task2 = Task.Run(() => { Console.WriteLine("Task 2 is running."); Thread.Sleep(5000);});
 
             //3. Using Task.Factory.StartNew() method - another way to create and start a task in one step, returning a Task object. The difference between Task.Run() and Task.Factory.StartNew() is that this method offers more options and configurations for task creation, and it starts subtasks of the parent task in the same thread by default, while Task.Run() does not do this.
-            Task task3 = Task.Factory.StartNew(() => { Console.WriteLine("Task 3 is running."); Thread.Sleep(1000);});
+            //Task task3 = Task.Factory.StartNew(() => { Console.WriteLine("Task 3 is running."); Thread.Sleep(1000);});
 
 
             //Task Class Methods
@@ -53,6 +53,7 @@
             FromResult()                  | Returns a task that successfully completes with a certain result. A static method of the Task class.
             Yield()                       | Returns a task that asynchronously yields back to the current context when awaited. A static method of the Task class.
             GetAwaiter()                  | For Task<T>, GetAwaiter().GetResult() blocks until completion and returns the result. Like Result, it blocks; unlike Result, it throws the original exception instead of wrapping it in AggregateException. Prefer await in async code.
+            
             
 
             */
@@ -88,17 +89,17 @@
 
 
             //FromCancellation()
-            Task cancelledTask = Task.Run(() => {return Task.FromCanceled(new CancellationToken());});
+            //Task cancelledTask = Task.Run(() => {return Task.FromCanceled(new CancellationToken());});
 
 
             //FromException()
-            Task Exception = Task.FromException(new Exception("This is an exception!"));
+            //Task Exception = Task.FromException(new Exception("This is an exception!"));
 
             
             //FromResult()
-            Task<int> Result = Task.Run(() => 42); // this is the same thingie as below.
+            /*Task<int> Result = Task.Run(() => 42); // this is the same thingie as below.
             Task<int> Result2 = Task.FromResult(42); // this is the same thingie as above.
-            var result = Result.Result; //Task returns assigns this result to the Result property of the Task instance. This property is used to retrieve the result of a completed task. 
+            var result = Result.Result;*/ //Task returns assigns this result to the Result property of the Task instance. This property is used to retrieve the result of a completed task. 
 
 
             //Yield()
@@ -107,6 +108,66 @@
 
             //GetAwaiter()
             // GetAwaiter().GetResult() blocks like Result, but throws the original exception instead of wrapping it in AggregateException. Prefer await in async code.
+            
+            
+            
+            //Task Class Properties
+            //Properties List
+            /*
+             CompletedTask                | Returns a task object that has been already completed successfully.                 A static method
+             CurrentId                    | Returns the ID of the current task.                                                 A static method
+             Factory                      | The property used to create new tasks.                                              A static method
+             IsCanceled                   | Returns a bool based on if the task is cancelled. 
+             IsCompleted                  | Returns a bool based on if the task is completed.
+             AsyncState                   | Returns the state associated with the task.             
+             IsCompletedSuccessfully      | Returns a bool based on if the task is SUCCESSFULLY completed.
+             IsFaulted                    | Returns a bool based on if the task encountered an error.
+             Id                           | Returns the Id of a task. Non-static version of CurrentId
+             Status                       | Returns the status of the task.(if its completed, failed due to an error, successfully completed, etc.)
+             */
+
+
+            Task expTask = Task.Run(() => { Console.WriteLine("Hello World!"); Thread.Sleep(5000); });
+            
+            //CompletedTask
+            Task X() //Imagine we have a method returning a task object.
+            {
+                //...Operations,Operations...
+                //return Task.Run(() => {}); //Rather than returning a normal task back...
+                return Task.CompletedTask; //...we can return a task already completed successfully to indicate the X method is finished.
+            }
+            
+            //CurrentId
+            /*Task test = Task.Run(() => { Console.WriteLine(Task.CurrentId); });
+
+            Console.Read();*/
+            
+            //Factory
+            //Task.Factory.StartNew(() => {});
+            
+            //IsCanceled
+            Console.WriteLine(expTask.IsCanceled);
+            
+            //IsCompleted
+            Console.WriteLine(expTask.IsCompleted);
+            
+            //AsyncState
+            /*Task asyncTask = Task.Factory.StartNew((i) => { Console.WriteLine("async task"); }, "state"); //As we can see here, we gave the task a state parameter and what that state is as argument to the creation method.
+            var state = (string)asyncTask.AsyncState; //We use this property to acquire that state.
+            Console.WriteLine(state);*/
+            
+            //Id
+            int idExpTask = expTask.Id;
+            Console.WriteLine(idExpTask);
+             
+            //IsFaulted
+            Console.WriteLine(expTask.IsFaulted);
+            
+            //Status
+            //Thread.Sleep(6000); //To see the Status difference
+            Console.WriteLine(expTask.Status);
+            
+            Thread.Sleep(5000);
         }
     }
 }
