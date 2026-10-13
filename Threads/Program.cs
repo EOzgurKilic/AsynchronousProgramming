@@ -954,8 +954,8 @@ thread8.Start();*/
         //A timer runs a callback repeatedly at a chosen interval.
         //They are working with ThreadPools so its optimized in this aspect.
         //The timers run callbacks on ThreadPool threads:
-        /*Timer tmr = new (state => {System.Console.WriteLine("Tik, Tak!");}, "state", 2000, 1000); //Executed by a BG thread!!!
-        Thread.Sleep(5000);
+        //Timer tmr = new (state => {System.Console.WriteLine("Tik, Tak!");}, "state", 2000 /*due time*/, 1000 /*period*/); //Executed by a BG thread!!!
+        /*Thread.Sleep(5000);
         //A timers period could be change later with the Change() method;
         tmr.Change(0, 100);
         Timer tmr2 = new (state => {System.Console.WriteLine("Gonna be executed for once!");}, "state", 1000, Timeout.Infinite);

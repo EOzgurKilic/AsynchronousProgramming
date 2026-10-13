@@ -24,7 +24,7 @@
             //There are 3 ways to declare a task in C#:
 
             //1. Using Task constructor - To manually create a task and start it (with Start()) later.
-            Task task1 = new Task(() => { Console.WriteLine("Task 1 is running."); Thread.Sleep(5000);}); //Constructor takes an Action delegate as a parameter to define the task's work. Reminder: Action delegate represents void methods.
+            Task task1 = new Task(() => { Console.WriteLine("Task 1 is running."); Thread.Sleep(5000);}); //Constructor takes an Action or Func delegate as a parameter to define the task's work. Reminder: Action delegate represents void methods.
             //task1.Start(); //To start the task execution.
 
             //2. Using Task.Run() method - The simplest and most common way to create and start a task in one step. It returns a Task object.
@@ -46,6 +46,15 @@
             WhenAll()                     | Will return a task after all the tasks given as arguments to the method are completed. A static method of the Task class.
             WhenAny()                     | Will return a task after any of the tasks given as arguments to the method are completed. A static method of the Task class.
             ContinueWith()                | Used to make an operation after a task is completed. Takes an Action as the operation to be performed.
+            Delay()                       | Creates a task that will complete after a specified time delay. A static method of the Task class. The async version of Thread.Sleep() method. 
+                                          | It is non-blocking and does not block the thread it is called on. 
+            FromCancellation()            | Returns a cancelled task that is completed with a CancellationTokenSource.Token. A static method of the Task class.
+            FromException()               | Returns a task that ends with an exception. A static method of the Task class.
+            FromResult()                  | Returns a task that successfully completes with a certain result. A static method of the Task class.
+            Yield()                       | Returns a task that asynchronously yields back to the current context when awaited. A static method of the Task class.
+            GetAwaiter()                  | For Task<T>, GetAwaiter().GetResult() blocks until completion and returns the result. Like Result, it blocks; unlike Result, it throws the original exception instead of wrapping it in AggregateException. Prefer await in async code.
+            
+
             */
 
             //Wait()
@@ -62,7 +71,7 @@
 
 
             //WhenAll()
-            //In WhenAll(), waiting action is performed in a different thread unlike WaitAll() where waiting action is performed in the same thread. So, Main Thread will no wait for WhenAll() to complete and will continue executing the next lines of code. 
+            //In WhenAll(), waiting action is performed in a different thread unlike WaitAll() where waiting action is performed in the same thread. So, Main Thread will not wait for WhenAll() to complete and will continue executing the next lines of code. 
             //Task.WhenAll(task2, task3);
 
 
@@ -74,8 +83,30 @@
             Thread.Sleep(6000);*/
             
 
+            //Delay()
+            //will be covered later after async and await keywords are explained.
+
+
+            //FromCancellation()
+            Task cancelledTask = Task.Run(() => {return Task.FromCanceled(new CancellationToken());});
+
+
+            //FromException()
+            Task Exception = Task.FromException(new Exception("This is an exception!"));
+
             
-            
+            //FromResult()
+            Task<int> Result = Task.Run(() => 42); // this is the same thingie as below.
+            Task<int> Result2 = Task.FromResult(42); // this is the same thingie as above.
+            var result = Result.Result; //Task returns assigns this result to the Result property of the Task instance. This property is used to retrieve the result of a completed task. 
+
+
+            //Yield()
+            //will be covered later after async and await keywords are explained.
+
+
+            //GetAwaiter()
+            // GetAwaiter().GetResult() blocks like Result, but throws the original exception instead of wrapping it in AggregateException. Prefer await in async code.
         }
     }
 }
