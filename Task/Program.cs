@@ -20,7 +20,7 @@
             */
             
             
-            //Declaration
+            #region Declaration
             //There are 3 ways to declare a task in C#:
 
             //1. Using Task constructor - To manually create a task and start it (with Start()) later.
@@ -32,9 +32,10 @@
 
             //3. Using Task.Factory.StartNew() method - another way to create and start a task in one step, returning a Task object. The difference between Task.Run() and Task.Factory.StartNew() is that this method offers more options and configurations for task creation, and it starts subtasks of the parent task in the same thread by default, while Task.Run() does not do this.
             //Task task3 = Task.Factory.StartNew(() => { Console.WriteLine("Task 3 is running."); Thread.Sleep(1000);});
+            #endregion
 
 
-            //Task Class Methods
+            #region Task Class Methods
             //Method List
             /*
             Method Name	                  |	Description
@@ -108,10 +109,10 @@
 
             //GetAwaiter()
             // GetAwaiter().GetResult() blocks like Result, but throws the original exception instead of wrapping it in AggregateException. Prefer await in async code.
+            #endregion
             
             
-            
-            //Task Class Properties
+            #region Task Class Properties
             //Properties List
             /*
              CompletedTask                | Returns a task object that has been already completed successfully.                 A static method
@@ -127,7 +128,7 @@
              */
 
 
-            Task expTask = Task.Run(() => { Console.WriteLine("Hello World!"); Thread.Sleep(5000); });
+            //Task expTask = Task.Run(() => { Console.WriteLine("Hello World!"); Thread.Sleep(5000); });
             
             //CompletedTask
             Task X() //Imagine we have a method returning a task object.
@@ -146,10 +147,10 @@
             //Task.Factory.StartNew(() => {});
             
             //IsCanceled
-            Console.WriteLine(expTask.IsCanceled);
+            //Console.WriteLine(expTask.IsCanceled);
             
             //IsCompleted
-            Console.WriteLine(expTask.IsCompleted);
+            //Console.WriteLine(expTask.IsCompleted);
             
             //AsyncState
             /*Task asyncTask = Task.Factory.StartNew((i) => { Console.WriteLine("async task"); }, "state"); //As we can see here, we gave the task a state parameter and what that state is as argument to the creation method.
@@ -157,17 +158,92 @@
             Console.WriteLine(state);*/
             
             //Id
-            int idExpTask = expTask.Id;
-            Console.WriteLine(idExpTask);
+            /*int idExpTask = expTask.Id;
+            Console.WriteLine(idExpTask);*/
              
             //IsFaulted
-            Console.WriteLine(expTask.IsFaulted);
+            //Console.WriteLine(expTask.IsFaulted);
             
             //Status
             //Thread.Sleep(6000); //To see the Status difference
-            Console.WriteLine(expTask.Status);
+            //Console.WriteLine(expTask.Status);
             
-            Thread.Sleep(5000);
+            //Thread.Sleep(5000);
+            #endregion
+
+
+            #region TaskFactory & TaskScheduler & TaskCompletionSource Classes
+            //TaskFactory Class
+            //Precisely used to create and manage tasks.
+            //The Factory property of the Task class is actually an instance of the TaskFactory class. It provides methods to create and start tasks, as well as to configure their behavior. 
+
+            //Methods of the TaskFactory Class
+            /*
+                instance.StartNew() - Creates and starts a new task.
+                ContinueWhenAll()   - Its like ContinueWith() method but you give an array of tasks as argument and it will return and start the other task argument you gave to it after all the tasks in the array are completed. 
+                ContinueWhenAny()   - Its literally the same as ContinueWhenAll() method but it will return and start the other task argument after any of the tasks in the array are done.
+            */
+
+
+            //ContinueWhenAll()    
+            //Its like ContinueWith() method but you give an array of tasks as argument and it will execute the other task argument you gave to it after all the tasks in the array are completed. 
+            /*Task taskc1 = Task.Run(() => { Console.WriteLine("Task 1 is running."); Thread.Sleep(1000); Console.WriteLine("Task 1 is completed."); });
+            Task taskc2 = Task.Run(() => { Console.WriteLine("Task 2 is running."); Thread.Sleep(2000); Console.WriteLine("Task 2 is completed."); });
+            Task taskc3 = Task.Run(() => { Console.WriteLine("Task 3 is running."); Thread.Sleep(3000); Console.WriteLine("Task 3 is completed."); });
+            
+            Task continuationTask = Task.Factory.ContinueWhenAll(new[] {taskc1, taskc2, taskc3}, (tasks) => {System.Console.WriteLine("All tasks are completed.");});
+            Thread.Sleep(4000);*/
+
+
+            //ContinueWhenAny()
+            /*Task taskc1 = Task.Run(() => { Console.WriteLine("Task 1 is running."); Thread.Sleep(1000); Console.WriteLine("Task 1 is completed."); });
+            Task taskc2 = Task.Run(() => { Console.WriteLine("Task 2 is running."); Thread.Sleep(2000); Console.WriteLine("Task 2 is completed."); });
+            Task taskc3 = Task.Run(() => { Console.WriteLine("Task 3 is running."); Thread.Sleep(3000); Console.WriteLine("Task 3 is completed."); });
+            
+            Task continuationTask = Task.Factory.ContinueWhenAny(new[] {taskc1, taskc2, taskc3}, (tasks) => {System.Console.WriteLine("All tasks are completed.");});
+            Thread.Sleep(4000);*/
+
+
+
+            //TaskScheduler Class
+            //A TaskScheduler determines how and where tasks are queued and executed. The default scheduler
+            //typically uses the ThreadPool; tasks do not necessarily each get their own thread.
+            //Custom schedulers are useful for specialized scenarios (for example, controlling concurrency
+            //or scheduling work onto a UI thread), but are advanced and rarely needed in everyday code.
+            //For now, it is enough to know what a TaskScheduler does; you can skip implementing one.
+
+
+
+            //TaskCompletionSource Class
+            //Is a assisting class next to the Task class that is used to manage the completion of a task in fail, exception, success, and cancellation scenarios.
+            //TaskCompletionSource<T> object enables Task<T> object creation and the control of its completion from outside manually.
+
+            Task<int> expLocalMethod(TaskStatusEnum resultStatus)
+            {
+                TaskCompletionSource<int> tcs = new();
+
+                switch(resultStatus)
+                {
+                    case TaskStatusEnum.Result:
+                        tcs.SetResult(31); //Sets a result to it
+                        break;
+                    case TaskStatusEnum.Exception:
+                        tcs.SetException(new Exception("This is an exception!")); //Sets an exception to it
+                        break;
+                    case TaskStatusEnum.Cancelled: //Sets a cancellation to it
+                        tcs.SetCanceled();
+                        break;
+                } //Remember that these three methods are the equavalents of the FromResult(), FromException(), and FromCancellation() methods from the Task class. 
+
+                return tcs.Task; //Returns the task object that is created by the TaskCompletionSource<T> object.
+            }
+            #endregion
+        }
+        enum TaskStatusEnum
+        {
+            Result,
+            Exception,
+            Cancelled
         }
     }
 }
