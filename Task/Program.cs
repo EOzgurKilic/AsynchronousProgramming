@@ -238,6 +238,59 @@
                 return tcs.Task; //Returns the task object that is created by the TaskCompletionSource<T> object.
             }
             #endregion
+            
+            
+            #region async await Keywords
+            
+            //async Keyword
+            //We declare a method will do an async operation with this keyword
+            
+            //The async declared methods must return Task or Task<T> values. It can be a void method too but should be returning a Task for the best practice and cannot return any other type.
+            //Though, if a method has async, it can return any value type that is the generic argument of the Task<T> instance it should actually return.
+              async Task<int> localAsyncMethod()
+              {
+                  return 30; //This returns Task.FromResult(30) in the bg and would throw an error if the method wasn't async
+              }
+            //void usage is not recommended as Task without generics already shows the same behaviour as voids.
+            //There is a naming principle about async methods; they should simply end with "Async"
+            //async methods should be strictly preferred for use in async methods.
+            //We should release the resources we used in async methods. We will be covering IAsyncDisposable later in the tutorials.
+            //We should avoid async method usage in Constructors as they pursue a sync behaviour.
+            
+            //await Keyword
+            //Used in async methods to wait for a value in the synchronous way.
+            //In normal, to catch an exception that occured in a task, we are doing the long operation below;
+            Task taskR = new(() => { Console.WriteLine("code code code and more code!"); throw new Exception("my ass's will wanned this!"); });
+            taskR.ContinueWith((taskR) =>
+            {
+                if(taskR.Exception == null){
+                    Console.WriteLine("code completed without any exception");
+                }
+                else
+                {
+                    Console.WriteLine("an exception encountered: " + taskR.Exception.Message);
+                }
+            });     
+            //but with async and await keywords we can await an async method output in a try-catch statement and catch the exception if it occurs;
+
+            async Task localAsyncMethod2()
+            {
+                throw new Exception("async exception!");
+            }
+            async Task localAsyncMethod3()
+            {
+                try
+                {
+                    await localAsyncMethod2();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+
+            localAsyncMethod3();
+            #endregion
         }
         enum TaskStatusEnum
         {
