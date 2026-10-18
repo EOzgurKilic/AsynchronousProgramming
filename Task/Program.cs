@@ -270,7 +270,9 @@
                 {
                     Console.WriteLine("an exception encountered: " + taskR.Exception.Message);
                 }
-            });     
+            });
+            //taskR.Start();
+            //Thread.Sleep(2000);
             //but with async and await keywords we can await an async method output in a try-catch statement and catch the exception if it occurs;
 
             async Task localAsyncMethod2()
@@ -289,7 +291,88 @@
                 }
             }
 
-            localAsyncMethod3();
+            //localAsyncMethod3();
+            #endregion
+            
+            
+            #region ConfigureAwait & CancellationTokenSource
+            //ConfigureAwait Method
+            
+            //This method is used to decide if the rest of the codeblock after the await async method call will run in a different thread.
+            
+            //It takes a bool value which indicates what action will be taken and if the value is false (This method is used with the false argument most of the time), it will run the remaining codeblock in a different thread.
+            //This makes the performance better, especially in UI applications as it keeps the UI thread available as much as possible and has the other threads work more efficiently.
+            //Furthermore, setting it to false helps avoid deadlock situations too.
+            /*async Task anotherAsyncMethod(string path)
+            {
+                StreamReader reader = new(path);
+                var content = await reader.ReadToEndAsync().ConfigureAwait(false); //Btw ConfigureAwait returns Task<string> instance.
+                Console.WriteLine(content);
+            }
+
+            anotherAsyncMethod("C:\\Users\\Yusei\\RiderProjects\\AsynchronousProgramming\\Task\\ForTutorial.txt");
+            Thread.Sleep(2000);*/
+            
+            
+            
+            //CancellationToken Class & CancellationTokenSource
+            //CancellationToken Class is simply used to interrupt an async operation in progress whereas CancellationTokenSource Class is used for the same purpose but by creating single or multiple CancellationTokens.
+            
+            //CancellationTokenSource could cancel all the associated CancellationTokens with Cancel Method.
+            
+            //CancellationToken generally is passed to the methods via parameters and it controls and checks if the method is cancelled or not.
+            
+            //All async methods in .Net has an available CancellationToken overloading so that they could be cancelled.
+
+            /*async Task anotherAsyncMethod2(CancellationToken token)
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    token.ThrowIfCancellationRequested();
+                    Console.WriteLine(i);
+                    await Task.Delay(1000);
+                }
+            }
+
+            CancellationTokenSource tokenSource = new();
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await anotherAsyncMethod2(tokenSource.Token); //We give a token as argument to the method that is associated with the CancellationTokenSource object we created.
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Encountered an error: " + e.Message);
+                }
+            }); 
+            Task.Run(async () =>
+            {
+                await Task.Delay(4000);
+                tokenSource.Cancel();
+            });
+            Console.ReadKey();*/
+            
+            
+            
+            //Task & ValueTask
+            //We already know that Task is a class type concept stored in heap, a reference type.
+            //ValueTask is pretty much the struct version of Task, used for short processes or low-latency operations, stored in the stack.
+            //It has the same methods, can be used in async&await statements and so on.
+            /*async ValueTask ValueTaskAsyncMethod1(){}
+
+            async ValueTask ValueTaskAsyncMethod2()
+            {
+                await ValueTaskAsyncMethod1(); 
+            }
+
+            ValueTask valTask = new ValueTask(Task.Run(() => { Console.WriteLine("Thiss a value task started!"); }));
+            Thread.Sleep(1000);*/
+            #endregion
+            
+            
+            
+            #region IAsyncEnumerable & IAsyncEnumerator | Async foreach
             #endregion
         }
         enum TaskStatusEnum
