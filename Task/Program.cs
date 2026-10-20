@@ -1,4 +1,5 @@
-﻿namespace Tasks
+﻿using System.Collections.Concurrent;
+namespace Tasks
 {
     internal class Program
     {
@@ -388,10 +389,90 @@
                 }
             }
             
+// 
+            #endregion
 
 
+            #region Concurrent Collections
+            //Normal collections are not thread-safe and can cause issues in sync operations.
+            //Concurrent collections are precisely designed to be thread-safe and thus can be preferred in multi-threaded operations.
 
+            //Concurrent Collections List
+            /*
+            ConcurrentDictionary<TKey, TValue>
+            ConcurrentQueue<T>
+            ConcurrentStack<T>
+            ConcurrentBag<T> - Pretty much the same as List<T> but thread-safe and unordered.
+            BlockingCollection<T> 
+            */
+            //I will be only covering those that I haven't seen the normal collection versions of in the .Net library. The rest are pretty much the same as their normal collection versions.
+
+            //ConcurrentBag<T> 
+            //We use this collection when the element order is not important and we want to add and remove elements in a thread-safe manner. 
+            //Pretty much the same as List<T> but thread-safe and unordered.
+            /*ConcurrentBag<int> bag = new();
+            Task expTaskCon1 = Task.Run(async() =>
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    bag.Add(i);
+                    await Console.Out.WriteLineAsync($"{i} added to the bag!");
+                    await Task.Delay(1000);
+                }
+            });
+
+            Task expTaskCon2 = Task.Run(async () =>
+            {
+                while (true)
+                {
+                    if(bag.TryTake(out int element)) System.Console.WriteLine($"Element - {element}");
+                    else await Task.Delay(500);
+                }
+            });
+            Task.WaitAny(expTaskCon1, expTaskCon2);*/
             
+            //BlockingCollection<T>.
+            //Use it when threads/tasks need to hand work to each other through a shared work queue.
+            //Unlike ConcurrentBag<T>, it can coordinate the producer/consumer workflow:
+            // - Take() waits while the collection is empty; TryTake() can wait for a specified timeout.
+            // - A bounded collection can make Add() wait when it reaches capacity, applying backpressure.
+            // - CompleteAdding() tells consumers that no more items will arrive; consuming enumeration ends
+            //   after remaining items are drained.
+            //It is not just another bag: ConcurrentBag is an unordered thread-safe store of items, while
+            //BlockingCollection adds waiting, optional capacity limits, and a completion signal.
+            //Choose ConcurrentBag when you only need thread-safe add/take and order does not matter.
+            //Choose BlockingCollection for a producer-consumer pipeline where empty/full/completion matter.
+            //For modern async producer-consumer code, consider System.Threading.Channels instead; the
+            //BlockingCollection operations block threads and are primarily useful in synchronous workflows.
+            /*
+            using BlockingCollection<int> work = new(new ConcurrentQueue<int>(), boundedCapacity: 2);
+
+            Task producer = Task.Run(() =>
+            {
+                for (int i = 1; i <= 5; i++)
+                {
+                    work.Add(i); // Waits if the bounded buffer is full.
+                    Console.WriteLine($"Produced {i}");
+                }
+                work.CompleteAdding(); // Consumers finish after all queued items are taken.
+            });
+
+            Task consumer = Task.Run(() =>
+            {
+                foreach (int item in work.GetConsumingEnumerable())
+                    Console.WriteLine($"Consumed {item}");
+            });
+
+            Task.WaitAll(producer, consumer);
+            */
+
+
+
+            #endregion
+
+
+            #region Structured Concurrency
+
             #endregion
         }
         enum TaskStatusEnum
