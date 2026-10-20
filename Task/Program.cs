@@ -373,6 +373,25 @@
             
             
             #region IAsyncEnumerable & IAsyncEnumerator | Async foreach
+            //Async Foreach
+            //Primarily used while traversing through an async method to release the thread for other work as we are waiting for the data (IO operations and stuff).
+            //Can be only used in async methods
+            //Prototype
+            async void expAsyncMethod() 
+            {
+                // await foreach asynchronously retrieves each item from an IAsyncEnumerable<T>.
+                // If the next item requires I/O, the method suspends without blocking the thread.
+                // Execution resumes when the item becomes available.
+                await foreach (var i in File.ReadLinesAsync("C:\\Users\\Yusei\\RiderProjects\\AsynchronousProgramming\\Task\\ForTutorial.txt")) 
+                {
+                    Console.WriteLine(i);
+                }
+            }
+            
+
+
+
+            
             #endregion
         }
         enum TaskStatusEnum
