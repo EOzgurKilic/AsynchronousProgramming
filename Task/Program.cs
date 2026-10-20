@@ -472,7 +472,8 @@ namespace Tasks
 
 
             #region Structured Concurrency
-
+            //The header itself is used to refer to managing multiple asyn operations such as cancelling some or all of the rest when one of them fails.
+            //You gotta revise this topic later on. I am having a tough time understanding it for some reason
             #endregion
         }
         enum TaskStatusEnum
