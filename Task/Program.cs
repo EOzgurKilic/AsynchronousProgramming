@@ -475,6 +475,50 @@ namespace Tasks
             //The header itself is used to refer to managing multiple asyn operations such as cancelling some or all of the rest when one of them fails.
             //You gotta revise this topic later on. I am having a tough time understanding it for some reason
             #endregion
+
+
+            #region Parallel Programming
+            //We scale when we are working on massive data and DBs by utilizing parallel programming to be able to perform operations on them. Instead of assigning the whole workflow to a single core, we divide the workload into parts, distributing them among multiple cores and handling them in a parallel.
+            //If u wanna work in parallel programming, you gotta be working with a multi-core processor.
+            //In essence, multiple threads and operations are carried out simultaneously in this concept too but essencially we pursue it with multi core processors to operate more efficient calculations.
+            //The purpose of it is to have codeblock run in multiple threads, break the workload down into smaller pieces and execute them in parallel. 
+
+
+            //GENERAL KNOWLEDGE CORNER: Parallel Extensions (PFX) is a set of .NET Libraries designed to simplify parallel programming by distributing workloads across multiple CPU cores.
+            //The key tools of it are;
+            //Task Parallel Library (TPL), async & await statements, Parallel Class, Parallel LINQ (PLINQ)
+            //We will be focusing on the Parallel class and PLINQ in this tutorial.
+
+
+            //Parallel Class
+            //Is actually a part of the TPL class.
+            //Enables us to perform our operations with such iterational concepts as foreach in parallel.
+            //Reading files, pulling data from db, and I/O processes will be facilitated and fast thanks to PLINQ.
+
+
+            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            //!!!!!!!!ALWAYS REVISE PARALLELISM CONCURRENCY DIFFERENCE!!!!!!!!
+            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+            //Parallel Execution Ballistics
+            //Is a term that refers to how parallel operations work and their effects on the system resources.
+            //The following items should be carefully considered in parallel operations
+            //- Task distribution: PLINQ splits data queries into pieces and process them by distributing them on multiple CPU cores.
+            //- Task extra cost: The coordination actions (such as starting, and merging) among the tasks might require extra time and resource.
+            //- Speedup situation: A faster operation processes are expected in the concept but the actual difference might be less than the expected and limited because of the task dependancies and the extra costs.
+            //- Accurate Efficiency: Parallel operations show productiveness when the tasks are independant and lengthy.
+            
+
+            //PLINQ
+            //Is an extension of LINQ
+            //As the name suggests, it is pretty much about doing LINQ operations in a parallel way on large datasets (collections).
+            //AsParallel() will follow the default LINQ syntax and merely make it go on in parallel.
+            //Tho, since performing operations simultaneously is in the essence of Parallel programming, the query outputs have a chance to be in unintended orders with AsParallel() method usage (different order than the actual collection element order). To prevent that and end up with the normal output behaviour, we utilize AsOrdered() right after AsParallel();
+            List<int> random = new(){1,2,3,4,5};
+            var result = random.AsParallel().AsOrdered().Where(randomNum => randomNum > 2).OrderByDescending((randomInt) => randomInt);
+            //But don't forget that this is a bit costly.
+            #endregion
         }
         enum TaskStatusEnum
         {
